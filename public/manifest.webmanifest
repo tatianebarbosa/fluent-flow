@@ -1,0 +1,43 @@
+{
+  "name": "Fluent Flow",
+  "short_name": "Fluent Flow",
+  "description": "Treino de inglês e estudo para CNH em modo flow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#050606",
+  "theme_color": "#10241f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Treino",
+      "short_name": "Treino",
+      "url": "/drill"
+    },
+    {
+      "name": "CNH",
+      "short_name": "CNH",
+      "url": "/cnh"
+    },
+    {
+      "name": "Ajustes",
+      "short_name": "Ajustes",
+      "url": "/settings"
+    }
+  ]
+}

@@ -14,6 +14,13 @@ export type LearningBlockSize = 3 | 5 | 10;
 
 export type VoiceGender = "female" | "male";
 
+export type AppLanguage = "pt-BR" | "en-US";
+
+export type AppPreferences = {
+  language: AppLanguage;
+  voiceGender: VoiceGender;
+};
+
 export type FlowItem = {
   word: string;
   translation: string;

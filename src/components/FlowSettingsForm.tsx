@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useAppPreferences } from "@/components/AppPreferencesProvider";
 import { CategorySelector } from "@/components/CategorySelector";
 import { Button } from "@/components/Button";
 import { Toggle } from "@/components/Toggle";
@@ -26,28 +27,19 @@ type FlowSettingsFormProps = {
 };
 
 const levels: FlowLevelNumber[] = [1, 2, 3];
-const difficulties: Array<{ value: FlowDifficulty; label: string }> = [
-  { value: "basic", label: "Básico" },
-  { value: "intermediate", label: "Intermediário" },
-  { value: "advanced", label: "Avançado" },
-];
+const difficulties: FlowDifficulty[] = ["basic", "intermediate", "advanced"];
 const durations: FlowDuration[] = [30, 60];
-const intervals: FlowInterval[] = [2, 3];
+const intervals: FlowInterval[] = [1, 2];
 const restDurations: FlowRestDuration[] = [10, 30];
-const learningPatterns: Array<{ value: LearningPattern; label: string }> = [
-  { value: "block", label: "Repetir sequência" },
-  { value: "item", label: "Repetir palavra" },
-];
+const learningPatterns: LearningPattern[] = ["block", "item"];
 const learningBlockSizes: LearningBlockSize[] = [3, 5, 10];
-const voiceOptions: Array<{ value: VoiceGender; label: string }> = [
-  { value: "female", label: "Feminina" },
-  { value: "male", label: "Masculina" },
-];
+const voiceOptions: VoiceGender[] = ["female", "male"];
 
 export function FlowSettingsForm({
-  actionLabel = "Salvar ajustes",
+  actionLabel,
   onSaved,
 }: FlowSettingsFormProps) {
+  const { t } = useAppPreferences();
   const [settings, setSettings] = useState<FlowSettings>(defaultFlowSettings);
   const [loaded, setLoaded] = useState(false);
   const [openDifficulty, setOpenDifficulty] = useState<FlowDifficulty | null>(
@@ -96,8 +88,8 @@ export function FlowSettingsForm({
   ).join(" ");
   const learningPreview =
     settings.learningPattern === "block"
-      ? `${blockPreview} -> repete essa sequência`
-      : "1 1 2 2 3 3 -> repete cada palavra";
+      ? `${blockPreview} -> ${t.repeatSequenceExample}`
+      : t.repeatWordExample;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -108,23 +100,23 @@ export function FlowSettingsForm({
 
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-          Nível
+          {t.level}
         </p>
         <div className="grid gap-2">
           {difficulties.map((difficulty) => (
-            <div key={difficulty.value} className="space-y-2">
+            <div key={difficulty} className="space-y-2">
               <button
                 type="button"
-                onClick={() => selectDifficulty(difficulty.value)}
+                onClick={() => selectDifficulty(difficulty)}
                 className={`w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
-                  settings.difficulty === difficulty.value
+                  settings.difficulty === difficulty
                     ? "border-emerald-300 bg-emerald-300 text-neutral-950"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
                 }`}
               >
-                {difficulty.label}
+                {t[difficulty]}
               </button>
-              {openDifficulty === difficulty.value ? (
+              {openDifficulty === difficulty ? (
                 <div className="grid grid-cols-3 gap-2">
                   {levels.map((level) => (
                     <button
@@ -150,7 +142,7 @@ export function FlowSettingsForm({
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-            Duração
+            {t.duration}
           </p>
           <div className="grid gap-2">
             {durations.map((duration) => (
@@ -178,7 +170,7 @@ export function FlowSettingsForm({
             <button
               type="button"
               onClick={addDuration}
-              aria-label="Aumentar duração"
+              aria-label={t.addDuration}
               className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-2xl font-semibold leading-none text-white transition hover:bg-white/10"
             >
               +
@@ -188,7 +180,7 @@ export function FlowSettingsForm({
 
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-            Intervalo
+            {t.interval}
           </p>
           <div className="grid gap-2">
             {intervals.map((intervalSeconds) => (
@@ -216,7 +208,7 @@ export function FlowSettingsForm({
             <button
               type="button"
               onClick={addInterval}
-              aria-label="Aumentar intervalo"
+              aria-label={t.addInterval}
               className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-2xl font-semibold leading-none text-white transition hover:bg-white/10"
             >
               +
@@ -227,7 +219,7 @@ export function FlowSettingsForm({
 
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-          Descanso
+          {t.rest}
         </p>
         <div className="grid grid-cols-3 gap-2">
           {restDurations.map((restDuration) => (
@@ -255,7 +247,7 @@ export function FlowSettingsForm({
           <button
             type="button"
             onClick={addRestDuration}
-            aria-label="Aumentar descanso"
+            aria-label={t.addRest}
             className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-2xl font-semibold leading-none text-white transition hover:bg-white/10"
           >
             +
@@ -266,67 +258,66 @@ export function FlowSettingsForm({
       <div className="space-y-3">
         <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-            Voz
+            {t.voice}
           </p>
           <div className="grid grid-cols-2 gap-2">
             {voiceOptions.map((voiceOption) => (
               <button
-                key={voiceOption.value}
+                key={voiceOption}
                 type="button"
-                onClick={() => updateSettings({ voiceGender: voiceOption.value })}
+                onClick={() => updateSettings({ voiceGender: voiceOption })}
                 className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
-                  settings.voiceGender === voiceOption.value
+                  settings.voiceGender === voiceOption
                     ? "border-white bg-white text-neutral-950"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
                 }`}
               >
-                {voiceOption.label}
+                {voiceOption === "female" ? t.female : t.male}
               </button>
             ))}
           </div>
         </div>
         <Toggle
           checked={settings.showTranslation}
-          label="Mostrar tradução"
-          description="A tradução aparece menor abaixo do inglês."
+          label={t.showTranslation}
+          description={t.showTranslationDescription}
           onChange={(showTranslation) => updateSettings({ showTranslation })}
         />
         <Toggle
           checked={settings.learningMode}
-          label="Modo aprendizado"
-          description="Repete por item ou por blocos para fixar melhor."
+          label={t.learningMode}
+          description={t.learningModeDescription}
           onChange={(learningMode) => updateSettings({ learningMode })}
         />
         {settings.learningMode ? (
           <div className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
             <div>
               <p className="text-sm font-semibold text-white">
-                Como repetir
+                {t.repeatHow}
               </p>
               <p className="mt-1 text-xs leading-5 text-white/50">
-                Escolha se o treino repete uma palavra de cada vez ou uma
-                sequência inteira antes de avançar.
+                {t.repeatHowDescription}
               </p>
             </div>
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-                Estilo
+                {t.style}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {learningPatterns.map((pattern) => (
                   <button
-                    key={pattern.value}
+                    key={pattern}
                     type="button"
                     onClick={() =>
-                      updateSettings({ learningPattern: pattern.value })
+                      updateSettings({ learningPattern: pattern })
                     }
                     className={`rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
-                      settings.learningPattern === pattern.value
+                      settings.learningPattern === pattern
                         ? "border-white bg-white text-neutral-950"
                         : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
                     }`}
                   >
-                    {pattern.label}
+                    {pattern === "block" ? t.repeatSequence : t.repeatWord}
                   </button>
                 ))}
               </div>
@@ -335,7 +326,7 @@ export function FlowSettingsForm({
             {settings.learningPattern === "block" ? (
               <div className="space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-                  Quantas antes de repetir
+                  {t.countBeforeRepeat}
                 </p>
                 <div className="grid grid-cols-3 gap-2">
                   {learningBlockSizes.map((learningBlockSize) => (
@@ -357,7 +348,7 @@ export function FlowSettingsForm({
             ) : null}
             <div className="rounded-2xl border border-emerald-300/15 bg-emerald-300/10 p-3">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/70">
-                Exemplo
+                {t.example}
               </p>
               <p className="mt-2 text-sm font-medium leading-6 text-white/80">
                 {learningPreview}
@@ -367,14 +358,14 @@ export function FlowSettingsForm({
         ) : null}
         <Toggle
           checked={settings.showTime}
-          label="Mostrar tempo"
-          description="Opcional. Desligado por padrão para manter o treino em fluxo."
+          label={t.showTime}
+          description={t.showTimeDescription}
           onChange={(showTime) => updateSettings({ showTime })}
         />
       </div>
 
       <Button type="submit" className="w-full" disabled={!loaded}>
-        {actionLabel}
+        {actionLabel ?? t.saveSettings}
       </Button>
     </form>
   );

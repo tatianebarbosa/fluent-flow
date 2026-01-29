@@ -1,12 +1,18 @@
 import { flowCategories, flowCategoryMap } from "@/data";
-import type { FlowCategory, FlowDifficulty, FlowItem, FlowSettings } from "@/types";
+import type {
+  AppLanguage,
+  FlowCategory,
+  FlowDifficulty,
+  FlowItem,
+  FlowSettings,
+} from "@/types";
 
 export const defaultFlowSettings: FlowSettings = {
   categoryId: "numbers",
   difficulty: "basic",
   level: 1,
   duration: 30,
-  intervalSeconds: 2,
+  intervalSeconds: 1,
   restDuration: 10,
   learningMode: false,
   learningPattern: "block",
@@ -24,14 +30,24 @@ export function getItems(settings: FlowSettings): FlowItem[] {
   return getCategory(settings.categoryId).levels[settings.level];
 }
 
-export function getDifficultyDisplayLabel(difficulty: FlowDifficulty): string {
-  const labels: Record<FlowDifficulty, string> = {
-    basic: "Básico",
-    intermediate: "Intermediário",
-    advanced: "Avançado",
+export function getDifficultyDisplayLabel(
+  difficulty: FlowDifficulty,
+  language: AppLanguage = "pt-BR",
+): string {
+  const labels: Record<AppLanguage, Record<FlowDifficulty, string>> = {
+    "pt-BR": {
+      basic: "Básico",
+      intermediate: "Intermediário",
+      advanced: "Avançado",
+    },
+    "en-US": {
+      basic: "Basic",
+      intermediate: "Intermediate",
+      advanced: "Advanced",
+    },
   };
 
-  return labels[difficulty];
+  return labels[language][difficulty];
 }
 
 export function getItemForStep(items: FlowItem[], step: number): FlowItem {

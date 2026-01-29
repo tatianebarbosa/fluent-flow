@@ -17,6 +17,7 @@ import {
   Signpost,
   Target,
 } from "lucide-react";
+import { useAppPreferences } from "@/components/AppPreferencesProvider";
 import { Button } from "@/components/Button";
 import { CnhPlateSign } from "@/components/CnhPlateSign";
 import {
@@ -61,14 +62,14 @@ type CnhFlowItem = {
   plate?: CnhPlate;
 };
 
-const tabs: Array<{ id: CnhTab; label: string; icon: ComponentType<{ size?: number }> }> = [
-  { id: "flow", label: "Flow", icon: Play },
-  { id: "simulado", label: "Simulado", icon: ClipboardList },
-  { id: "flashcards", label: "Cards", icon: Layers },
-  { id: "placas", label: "Placas", icon: Signpost },
-  { id: "erradas", label: "Erradas", icon: RotateCcw },
-  { id: "progresso", label: "Progresso", icon: Target },
-  { id: "plano", label: "Plano", icon: BookOpen },
+const tabs: Array<{ id: CnhTab; icon: ComponentType<{ size?: number }> }> = [
+  { id: "flow", icon: Play },
+  { id: "simulado", icon: ClipboardList },
+  { id: "flashcards", icon: Layers },
+  { id: "placas", icon: Signpost },
+  { id: "erradas", icon: RotateCcw },
+  { id: "progresso", icon: Target },
+  { id: "plano", icon: BookOpen },
 ];
 
 const themes = Array.from(new Set(cnhQuestions.map((question) => question.tema)));
@@ -129,7 +130,8 @@ function normalizeText(value: string) {
 }
 
 export function CnhStudyHub() {
-  const [tab, setTab] = useState<CnhTab>("flow");
+  const { t } = useAppPreferences();
+  const [tab, setTab] = useState<CnhTab | null>(null);
   const [simulationQuestionIds, setSimulationQuestionIds] = useState(cnhQuickSimulationIds);
   const [simulationIndex, setSimulationIndex] = useState(0);
   const [simulationTitle, setSimulationTitle] = useState("Simulado rápido");
@@ -231,6 +233,15 @@ export function CnhStudyHub() {
   const accuracy = answeredCount === 0 ? 0 : Math.round((correctCount / answeredCount) * 100);
   const reviewCount = reviewItemIds.length + wrongQuestionIds.length + reviewQuestionIds.length;
   const isFocusedPractice = tab === "flow" && flowState !== "setup" && flowState !== "done";
+  const tabLabels: Record<CnhTab, string> = {
+    flow: t.cnhFlow,
+    simulado: t.cnhSimulation,
+    flashcards: t.cnhCards,
+    placas: t.cnhPlates,
+    erradas: t.cnhErrors,
+    progresso: t.cnhProgress,
+    plano: t.cnhPlan,
+  };
 
   function markItemStudied(item?: CnhFlowItem) {
     if (!item?.plate) return;
@@ -395,16 +406,16 @@ export function CnhStudyHub() {
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
               CNH
             </p>
-            <h1 className="text-4xl font-semibold tracking-normal">Estudo para prova teórica.</h1>
+            <h1 className="text-4xl font-semibold tracking-normal">{t.cnhTitle}</h1>
             <p className="text-sm leading-6 text-white/60">
-              Treine placas, revise erros e acompanhe o que precisa voltar depois.
+              {t.cnhSubtitle}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
             {tabs.map((item) => {
               const Icon = item.icon;
-              const selected = tab === item.id;
+              const selected = tab === item.id || (tab === null && item.id === "flow");
 
               return (
                 <button
@@ -418,7 +429,7 @@ export function CnhStudyHub() {
                   }`}
                 >
                   <Icon size={17} />
-                  {item.label}
+                  {tabLabels[item.id]}
                 </button>
               );
             })}
@@ -466,8 +477,8 @@ export function CnhStudyHub() {
           onAnswer={answerQuestion}
           onNext={nextQuestion}
           onMarkReviewLater={markQuestionReviewLater}
-          onStartFull={() => startSimulation(cnhFullSimulationIds, "Simulado completo", "prova")}
-          onStartQuick={() => startSimulation(cnhQuickSimulationIds, "Simulado rápido", "aprender")}
+          onStartFull={() => startSimulation(cnhFullSimulationIds, "Simulado completo")}
+          onStartQuick={() => startSimulation(cnhQuickSimulationIds, "Simulado rápido")}
           onSetMode={(mode) => startSimulation(simulationQuestionIds, mode === "prova" ? "Modo Prova" : "Modo Aprender", mode)}
           onStartTheme={startThemeReview}
           onStartWrong={startWrongReview}
@@ -587,6 +598,7 @@ function CnhFlowPanel({
   onReviewLater: (item: CnhFlowItem) => void;
   onReset: () => void;
 }) {
+  const { t } = useAppPreferences();
   const item = flowItems[flowIndex] ?? flowItems[0];
   const selectedOption = flowOptions.find((option) => option.id === flowCategory) ?? flowOptions[0];
   const progress = Math.round(((flowIndex + 1) / flowItems.length) * 100);
@@ -656,7 +668,7 @@ function CnhFlowPanel({
     return (
       <section className="flex min-h-[30rem] flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-black/20 p-4 text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-          Se prepare
+          {t.prepare}
         </p>
         <h2 className="mt-5 text-7xl font-semibold tracking-normal">
           {prepareRemaining}
@@ -669,7 +681,7 @@ function CnhFlowPanel({
     return (
       <section className="flex min-h-[30rem] flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-black/20 p-4 text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-          Concluído
+          {t.completed}
         </p>
         <h2 className="mt-4 text-5xl font-semibold tracking-normal">
           Flow finalizado
@@ -679,10 +691,10 @@ function CnhFlowPanel({
         </p>
         <div className="mt-8 grid w-full gap-3">
           <Button type="button" onClick={onStart}>
-            Começar de novo
+            {t.startAgain}
           </Button>
           <Button type="button" variant="secondary" onClick={onReset}>
-            Voltar
+            {t.back}
           </Button>
         </div>
       </section>
@@ -723,12 +735,12 @@ function CnhFlowPanel({
         {flowState === "running" ? (
           <Button type="button" variant="secondary" className="gap-2" onClick={onPause}>
             <Pause aria-hidden="true" size={18} strokeWidth={2.4} />
-            Pausar
+            {t.pause}
           </Button>
         ) : (
           <Button type="button" variant="secondary" className="gap-2" onClick={onResume}>
             <Play aria-hidden="true" size={18} strokeWidth={2.4} />
-            Continuar
+            {t.continue}
           </Button>
         )}
         <Button
@@ -754,7 +766,7 @@ function CnhFlowPanel({
           <span className="sr-only">Revisar depois</span>
         </Button>
         <Button type="button" variant="ghost" className="col-span-3" onClick={onReset}>
-          Finalizar treino
+          {t.finishTraining}
         </Button>
       </div>
     </section>
@@ -780,6 +792,8 @@ function PlateStudyPanel({
   onSearchChange: (value: string) => void;
   onToggleFavorite: (plateId: string) => void;
 }) {
+  const { t } = useAppPreferences();
+
   return (
     <section className="space-y-5">
       <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
@@ -792,11 +806,11 @@ function PlateStudyPanel({
           <input
             value={plateSearch}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Buscar placa pelo nome..."
+            placeholder={t.searchPlate}
             className="min-h-12 w-full rounded-full border border-white/10 bg-white/[0.04] py-3 pl-11 pr-4 text-sm font-medium text-white outline-none transition placeholder:text-white/35 focus:border-emerald-200 focus:bg-white/[0.07]"
           />
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-2">
           {plateCategories.map((category) => {
             const selected = category === plateFilter;
 
@@ -805,7 +819,7 @@ function PlateStudyPanel({
                 key={category}
                 type="button"
                 onClick={() => onFilterChange(category)}
-                className={`min-h-11 rounded-full border px-3 text-xs font-semibold transition ${
+                className={`min-h-11 min-w-0 rounded-full border px-2 text-center text-xs font-semibold leading-tight transition ${
                   selected
                     ? "border-emerald-200 bg-emerald-300 text-neutral-950 shadow-[0_0_0_2px_rgba(167,243,208,0.35)]"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
@@ -820,7 +834,7 @@ function PlateStudyPanel({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Minhas placas favoritas</h2>
+          <h2 className="text-lg font-semibold">{t.favoritePlates}</h2>
           <span className="text-sm text-white/45">{favoritePlates.length}</span>
         </div>
         {favoritePlates.length === 0 ? (
@@ -841,7 +855,7 @@ function PlateStudyPanel({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Todas as placas</h2>
+          <h2 className="text-lg font-semibold">{t.allPlates}</h2>
           <span className="text-sm text-white/45">{filteredPlates.length}</span>
         </div>
         <div className="grid gap-3">
@@ -1074,6 +1088,7 @@ function SimulationPanel({
   onStartWrong: () => void;
   onStartWeak: () => void;
 }) {
+  const { t } = useAppPreferences();
   const correctTotal = questionIds.filter((id) => answeredQuestions[id]).length;
 
   if (mode === "prova" && proofFinished) {
@@ -1098,7 +1113,7 @@ function SimulationPanel({
     <section className="space-y-4">
       <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/70">
-          Simulado
+          {t.cnhSimulation}
         </p>
         <h2 className="mt-2 text-2xl font-semibold">{title}</h2>
         <p className="mt-2 text-sm text-white/60">
@@ -1114,7 +1129,7 @@ function SimulationPanel({
                 : "border-white/10 bg-white/[0.04] text-white"
             }`}
           >
-            Modo Aprender
+            {t.studyMode}
           </button>
           <button
             type="button"
@@ -1125,28 +1140,28 @@ function SimulationPanel({
                 : "border-white/10 bg-white/[0.04] text-white"
             }`}
           >
-            Modo Prova
+            {t.examMode}
           </button>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <Button type="button" variant="secondary" onClick={onStartFull}>
-            30 questões
+            {t.questions30}
           </Button>
           <Button type="button" variant="secondary" onClick={onStartQuick}>
-            10 questões
+            {t.questions10}
           </Button>
           <Button type="button" variant="secondary" onClick={onStartWrong}>
-            Erradas
+            {t.wrongAnswers}
           </Button>
           <Button type="button" variant="secondary" onClick={onStartWeak}>
-            Menor desempenho
+            {t.weakestPerformance}
           </Button>
         </div>
       </div>
 
       <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-          Revisão por tema
+          {t.reviewByTheme}
         </p>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {themes.map((theme) => {

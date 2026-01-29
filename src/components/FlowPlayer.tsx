@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Pause, Play, RotateCcw, SlidersHorizontal } from "lucide-react";
+import { Pause, Play, RotateCcw } from "lucide-react";
+import { useAppPreferences } from "@/components/AppPreferencesProvider";
 import { Button } from "@/components/Button";
 import { FlowSettingsForm } from "@/components/FlowSettingsForm";
 import {
@@ -13,7 +13,12 @@ import {
   getPracticeItemForStep,
 } from "@/lib/flow";
 import { getCategoryDisplayLabel } from "@/lib/labels";
-import { loadFlowSettings, saveFlowSettings } from "@/lib/storage";
+import {
+  clearActiveFlowSession,
+  loadActiveFlowSession,
+  loadFlowSettings,
+  saveFlowSettings,
+} from "@/lib/storage";
 import { formatDuration } from "@/lib/time";
 import {
   speakEnglish,
@@ -35,10 +40,14 @@ type FlowState =
 
 type FlowPlayerProps = {
   autoStart?: boolean;
+  resumeSession?: boolean;
 };
 
-export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
-  const router = useRouter();
+export function FlowPlayer({
+  autoStart = false,
+  resumeSession = false,
+}: FlowPlayerProps) {
+  const { preferences, t } = useAppPreferences();
   const [settings, setSettings] = useState<FlowSettings>(defaultFlowSettings);
   const [flowState, setFlowState] = useState<FlowState>("setup");
   const [step, setStep] = useState(1);
@@ -58,12 +67,19 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
   const settingsRef = useRef(settings);
   const stepRef = useRef(step);
   const autoStartedRef = useRef(false);
+  const initialLoadRef = useRef(false);
   const beginFlowRef = useRef<(nextSettings?: FlowSettings) => void>(() => {});
 
   const items = useMemo(() => getItems(settings), [settings]);
   const item = getPracticeItemForStep(items, step, settings);
   const category = getCategory(settings.categoryId);
   const remaining = Math.max(0, settings.duration - elapsed);
+  const progressRatio =
+    settings.duration > 0
+      ? Math.min(1, Math.max(0, elapsed / settings.duration))
+      : 0;
+  const ringCircumference = 2 * Math.PI * 46;
+  const ringDashOffset = ringCircumference * (1 - progressRatio);
 
   const clearFlowInterval = useCallback(() => {
     if (intervalRef.current) {
@@ -98,6 +114,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
 
   const finishFlow = useCallback(
     (finalStep: number) => {
+      clearActiveFlowSession();
       clearFlowInterval();
       clearPrepareTimers();
       stopSpeech();
@@ -187,6 +204,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
   );
 
   const beginFlow = useCallback((nextSettings = settings) => {
+    clearActiveFlowSession();
     saveFlowSettings(nextSettings);
     settingsRef.current = nextSettings;
     setSettings(nextSettings);
@@ -216,7 +234,28 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
   }, [beginFlow]);
 
   useEffect(() => {
+    if (initialLoadRef.current) return;
+    initialLoadRef.current = true;
+
     const frame = window.requestAnimationFrame(() => {
+      const activeSession = resumeSession ? loadActiveFlowSession() : null;
+
+      if (activeSession) {
+        settingsRef.current = activeSession.settings;
+        setSettings(activeSession.settings);
+        setStep(activeSession.step);
+        stepRef.current = activeSession.step;
+        setElapsed(activeSession.elapsed);
+        elapsedBeforeRunRef.current = activeSession.elapsed;
+        setCompletedSteps(activeSession.completedSteps);
+        setFlowState("paused");
+        return;
+      }
+
+      if (!resumeSession) {
+        clearActiveFlowSession();
+      }
+
       const saved = loadFlowSettings();
       settingsRef.current = saved;
       setSettings(saved);
@@ -228,7 +267,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [autoStart, beginFlow]);
+  }, [autoStart, beginFlow, resumeSession]);
 
   useEffect(() => {
     stepRef.current = step;
@@ -303,18 +342,17 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
       <div className="space-y-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-            Modo Flow
+            {t.flowMode}
           </p>
           <h1 className="mt-3 text-4xl font-semibold tracking-normal">
-            Treine sem olhar o relógio.
+            {t.flowTitle}
           </h1>
           <p className="mt-3 text-sm leading-6 text-white/60">
-            Escolha uma categoria ou use seus ajustes salvos. O treino avança
-            automaticamente enquanto o tempo fica escondido.
+            {t.flowDescription}
           </p>
         </div>
         <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4 shadow-2xl shadow-black/30 backdrop-blur">
-          <FlowSettingsForm actionLabel="Iniciar Flow" onSaved={beginFlow} />
+          <FlowSettingsForm actionLabel={t.startFlow} onSaved={beginFlow} />
         </div>
       </div>
     );
@@ -324,18 +362,18 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center text-center">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-          Concluído!
+          {t.completed}
         </p>
         <h1 className="mt-4 text-6xl font-semibold tracking-normal">
-          Concluído!
+          {t.completed}
         </h1>
         <p className="mt-5 text-lg text-white/70">
-          {completedSteps} repetições realizadas
+          {completedSteps} {t.repetitionsCompleted}
         </p>
         <div className="mt-10 grid w-full gap-3">
-          <Button onClick={() => beginFlow(settings)}>Começar de novo</Button>
+          <Button onClick={() => beginFlow(settings)}>{t.startAgain}</Button>
           <Button variant="secondary" onClick={() => setFlowState("setup")}>
-            Alterar ajustes
+            {t.changeSettings}
           </Button>
         </div>
       </div>
@@ -347,7 +385,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
       <div className="flex flex-1 flex-col">
         <section className="flex flex-1 flex-col items-center justify-center text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-            Se prepare
+            {t.prepare}
           </p>
           <h1 className="mt-5 text-7xl font-semibold tracking-normal">
             {prepareRemaining}
@@ -356,7 +394,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
 
         <div className="grid pb-2">
           <Button variant="secondary" onClick={pauseFlow}>
-            Cancelar
+            {t.cancel}
           </Button>
         </div>
       </div>
@@ -368,7 +406,7 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
       <div className="flex flex-1 flex-col">
         <section className="flex flex-1 flex-col items-center justify-center text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
-            Descanso
+            {t.rest}
           </p>
           <h1 className="mt-5 text-7xl font-semibold tracking-normal">
             {formatDuration(restRemaining)}
@@ -379,13 +417,13 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
           <button
             type="button"
             onClick={addRestTime}
-            aria-label="Adicionar 15 segundos ao descanso"
+            aria-label={t.addRestTime}
             className="flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-white/10 text-sm font-semibold text-white transition hover:bg-white/15 active:bg-white/20"
           >
             +15
           </button>
           <Button variant="secondary" onClick={pauseFlow}>
-            Pular descanso
+            {t.skipRest}
           </Button>
         </div>
       </div>
@@ -397,59 +435,101 @@ export function FlowPlayer({ autoStart = false }: FlowPlayerProps) {
       <div className="flex items-center justify-between gap-3 text-xs text-white/45">
         <div className="min-w-0">
           <span>
-            {getCategoryDisplayLabel(category.id, category.label)} ·{" "}
-            {getDifficultyDisplayLabel(settings.difficulty)} {settings.level}
+            {getCategoryDisplayLabel(
+              category.id,
+              category.label,
+              preferences.language,
+            )} ·{" "}
+            {getDifficultyDisplayLabel(
+              settings.difficulty,
+              preferences.language,
+            )} {settings.level}
           </span>
-          {settings.showTime ? (
-            <span className="ml-2">{formatDuration(remaining)}</span>
-          ) : null}
         </div>
-        <button
-          type="button"
-          onClick={() => router.push("/settings")}
-          aria-label="Ajustes"
-          title="Ajustes"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition hover:bg-white/10"
-        >
-          <SlidersHorizontal aria-hidden="true" size={18} strokeWidth={2.4} />
-        </button>
       </div>
 
       <section className="flex flex-1 flex-col items-center justify-center text-center">
-        <h1 className="max-w-full text-balance text-6xl font-semibold leading-tight tracking-normal sm:text-7xl">
-          {item.word}
-        </h1>
-        {settings.showTranslation ? (
-          <p className="mt-5 text-xl font-medium text-emerald-100/70">
-            {item.translation}
-          </p>
-        ) : null}
+        {settings.showTime ? (
+          <div className="relative flex aspect-square w-[82vw] max-w-[22rem] items-center justify-center">
+            <svg
+              className="absolute inset-0 h-full w-full -rotate-90"
+              viewBox="0 0 100 100"
+              aria-hidden="true"
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="46"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.10)"
+                strokeWidth="2.5"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="46"
+                fill="none"
+                stroke="rgb(110 231 183)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringDashOffset}
+                className="transition-[stroke-dashoffset] duration-300 ease-linear"
+              />
+            </svg>
+
+            <div className="relative z-10 flex max-w-[15rem] flex-col items-center px-6">
+              <p className="mb-5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-semibold text-white/60">
+                {formatDuration(remaining)}
+              </p>
+              <h1 className="max-w-full text-balance text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
+                {item.word}
+              </h1>
+              {settings.showTranslation ? (
+                <p className="mt-5 text-xl font-medium text-emerald-100/70">
+                  {item.translation}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h1 className="max-w-full text-balance text-6xl font-semibold leading-tight tracking-normal sm:text-7xl">
+              {item.word}
+            </h1>
+            {settings.showTranslation ? (
+              <p className="mt-5 text-xl font-medium text-emerald-100/70">
+                {item.translation}
+              </p>
+            ) : null}
+          </>
+        )}
       </section>
 
       <div className="grid grid-cols-[1fr_auto] gap-3 pb-2">
         {flowState === "running" ? (
           <Button variant="secondary" className="gap-2" onClick={pauseFlow}>
             <Pause aria-hidden="true" size={18} strokeWidth={2.4} />
-            Pausar
+            {t.pause}
           </Button>
         ) : (
           <Button variant="secondary" className="gap-2" onClick={resumeFlow}>
             <Play aria-hidden="true" size={18} strokeWidth={2.4} />
-            Continuar
+            {t.continue}
           </Button>
         )}
         <Button
           variant="secondary"
           className="w-14 px-0"
           onClick={() => speakEnglish(item.word, settings.voiceGender)}
-          aria-label="Repetir"
-          title="Repetir"
+          aria-label={t.repeat}
+          title={t.repeat}
         >
           <RotateCcw aria-hidden="true" size={18} strokeWidth={2.4} />
-          <span className="sr-only">Repetir</span>
+          <span className="sr-only">{t.repeat}</span>
         </Button>
         <Button variant="ghost" className="col-span-2" onClick={finishEarly}>
-          Finalizar treino
+          {t.finishTraining}
         </Button>
       </div>
     </div>

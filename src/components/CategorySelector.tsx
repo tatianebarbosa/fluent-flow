@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useAppPreferences } from "@/components/AppPreferencesProvider";
 import { flowCategories } from "@/data";
 import { getCategoryDisplayLabel } from "@/lib/labels";
 
@@ -10,6 +11,7 @@ type CategorySelectorProps = {
 };
 
 export function CategorySelector({ value, onChange }: CategorySelectorProps) {
+  const { preferences, t } = useAppPreferences();
   const [showMore, setShowMore] = useState(false);
   const shouldShowMore = showMore;
   const groups = useMemo(
@@ -43,7 +45,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
   return (
     <div className="space-y-3">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-        Categoria
+        {t.category}
       </p>
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-2">
@@ -60,7 +62,11 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
                 }`}
               >
-                {getCategoryDisplayLabel(category.id, category.label)}
+                {getCategoryDisplayLabel(
+                  category.id,
+                  category.label,
+                  preferences.language,
+                )}
               </button>
             );
           })}
@@ -68,10 +74,10 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
             <button
               type="button"
               onClick={handleToggleMore}
-              aria-label="Mostrar mais categorias"
+              aria-label={t.moreCategoriesAria}
               className="flex min-h-14 items-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-left text-sm font-medium text-white transition hover:bg-white/10"
             >
-              Outras categorias
+              {t.moreCategories}
             </button>
           ) : null}
         </div>
@@ -81,7 +87,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
             onClick={handleToggleMore}
             className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
           >
-            Mostrar menos
+            {t.lessCategories}
           </button>
         ) : null}
       </div>

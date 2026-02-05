@@ -23,6 +23,7 @@ export type AppPreferences = {
 
 export type FlowItem = {
   word: string;
+  displayWord?: string;
   translation: string;
   image?: string;
 };

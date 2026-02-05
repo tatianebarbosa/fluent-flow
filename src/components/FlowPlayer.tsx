@@ -72,6 +72,7 @@ export function FlowPlayer({
 
   const items = useMemo(() => getItems(settings), [settings]);
   const item = getPracticeItemForStep(items, step, settings);
+  const displayWord = item.displayWord ?? item.word;
   const category = getCategory(settings.categoryId);
   const remaining = Math.max(0, settings.duration - elapsed);
   const progressRatio =
@@ -483,7 +484,7 @@ export function FlowPlayer({
                 {formatDuration(remaining)}
               </p>
               <h1 className="max-w-full text-balance text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
-                {item.word}
+                {displayWord}
               </h1>
               {settings.showTranslation ? (
                 <p className="mt-5 text-xl font-medium text-emerald-100/70">
@@ -495,7 +496,7 @@ export function FlowPlayer({
         ) : (
           <>
             <h1 className="max-w-full text-balance text-6xl font-semibold leading-tight tracking-normal sm:text-7xl">
-              {item.word}
+              {displayWord}
             </h1>
             {settings.showTranslation ? (
               <p className="mt-5 text-xl font-medium text-emerald-100/70">

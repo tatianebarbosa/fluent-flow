@@ -41,6 +41,13 @@ let keepAliveOscillator: OscillatorNode | null = null;
 let keepAliveGain: GainNode | null = null;
 let wakeLock: WakeLockSentinel | null = null;
 
+type WindowWithWebkitAudio = Window &
+  typeof globalThis & {
+    webkitAudioContext?: typeof AudioContext;
+  };
+
+type TimerCue = "tick" | "warning";
+
 type WakeLockSentinel = {
   release: () => Promise<void>;
   addEventListener: (type: "release", listener: () => void) => void;
@@ -51,6 +58,21 @@ type NavigatorWithWakeLock = Navigator & {
     request: (type: "screen") => Promise<WakeLockSentinel>;
   };
 };
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === "undefined") return null;
+
+  const AudioContextClass =
+    window.AudioContext ?? (window as WindowWithWebkitAudio).webkitAudioContext;
+
+  if (!AudioContextClass) return null;
+
+  if (!audioContext || audioContext.state === "closed") {
+    audioContext = new AudioContextClass();
+  }
+
+  return audioContext;
+}
 
 function getBestEnglishVoice(gender: VoiceGender): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis
@@ -102,21 +124,20 @@ async function requestWakeLock(): Promise<void> {
 export async function startTrainingAudioSession(): Promise<void> {
   if (typeof window === "undefined") return;
 
-  if (!audioContext) {
-    audioContext = new AudioContext();
+  const context = getAudioContext();
+  if (!context) return;
+
+  if (context.state === "suspended") {
+    await context.resume();
   }
 
-  if (audioContext.state === "suspended") {
-    await audioContext.resume();
-  }
-
-  if (!keepAliveOscillator && audioContext) {
-    keepAliveOscillator = audioContext.createOscillator();
-    keepAliveGain = audioContext.createGain();
+  if (!keepAliveOscillator) {
+    keepAliveOscillator = context.createOscillator();
+    keepAliveGain = context.createGain();
     keepAliveOscillator.frequency.value = 20;
     keepAliveGain.gain.value = 0.0001;
     keepAliveOscillator.connect(keepAliveGain);
-    keepAliveGain.connect(audioContext.destination);
+    keepAliveGain.connect(context.destination);
     keepAliveOscillator.start();
   }
 
@@ -130,6 +151,41 @@ export async function startTrainingAudioSession(): Promise<void> {
   }
 
   await requestWakeLock();
+}
+
+export function playTimerCue(cue: TimerCue = "tick"): void {
+  const context = getAudioContext();
+  if (!context) return;
+
+  if (context.state === "suspended") {
+    void context.resume();
+  }
+
+  const now = context.currentTime;
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+  const duration = cue === "warning" ? 0.14 : 0.055;
+  const volume = cue === "warning" ? 0.16 : 0.075;
+
+  oscillator.type = cue === "warning" ? "sine" : "triangle";
+  oscillator.frequency.setValueAtTime(cue === "warning" ? 880 : 520, now);
+
+  if (cue === "warning") {
+    oscillator.frequency.exponentialRampToValueAtTime(660, now + duration);
+  }
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.02);
+  oscillator.addEventListener("ended", () => {
+    oscillator.disconnect();
+    gain.disconnect();
+  });
 }
 
 export async function stopTrainingAudioSession(): Promise<void> {

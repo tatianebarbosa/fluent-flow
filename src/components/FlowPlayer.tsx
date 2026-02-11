@@ -21,6 +21,7 @@ import {
 } from "@/lib/storage";
 import { formatDuration } from "@/lib/time";
 import {
+  playTimerCue,
   speakEnglish,
   startTrainingAudioSession,
   stopSpeech,
@@ -66,6 +67,7 @@ export function FlowPlayer({
   const elapsedBeforeRunRef = useRef(0);
   const settingsRef = useRef(settings);
   const stepRef = useRef(step);
+  const lastFlowCountdownSecondRef = useRef<number | null>(null);
   const autoStartedRef = useRef(false);
   const initialLoadRef = useRef(false);
   const beginFlowRef = useRef<(nextSettings?: FlowSettings) => void>(() => {});
@@ -121,6 +123,7 @@ export function FlowPlayer({
       stopSpeech();
       startedAtRef.current = null;
       elapsedBeforeRunRef.current = 0;
+      lastFlowCountdownSecondRef.current = null;
       setCompletedSteps(finalStep);
       setElapsed(settingsRef.current.duration);
 
@@ -135,7 +138,13 @@ export function FlowPlayer({
       speakEnglish("Rest", settingsRef.current.voiceGender);
 
       restIntervalRef.current = window.setInterval(() => {
-        setRestRemaining((current) => Math.max(1, current - 1));
+        setRestRemaining((current) => {
+          if (current <= 1) return current;
+
+          const next = Math.max(1, current - 1);
+          playTimerCue(next <= 3 ? "warning" : "tick");
+          return next;
+        });
       }, 1000);
 
       restTimeoutRef.current = window.setTimeout(() => {
@@ -152,6 +161,7 @@ export function FlowPlayer({
       const startedAt = Date.now();
       startedAtRef.current = startedAt;
       let lastAdvancedAt = elapsedBeforeRunRef.current;
+      lastFlowCountdownSecondRef.current = null;
 
       intervalRef.current = window.setInterval(() => {
         const activeSettings = settingsRef.current;
@@ -166,6 +176,16 @@ export function FlowPlayer({
         }
 
         setElapsed(totalElapsed);
+
+        const secondsLeft = Math.ceil(activeSettings.duration - totalElapsed);
+        if (
+          secondsLeft > 0 &&
+          secondsLeft <= 5 &&
+          lastFlowCountdownSecondRef.current !== secondsLeft
+        ) {
+          lastFlowCountdownSecondRef.current = secondsLeft;
+          playTimerCue(secondsLeft <= 3 ? "warning" : "tick");
+        }
 
         if (totalElapsed - lastAdvancedAt >= activeSettings.intervalSeconds) {
           if (
@@ -215,13 +235,20 @@ export function FlowPlayer({
     setCompletedSteps(0);
     setPrepareRemaining(PREPARE_DURATION_SECONDS);
     elapsedBeforeRunRef.current = 0;
+    lastFlowCountdownSecondRef.current = null;
     clearPrepareTimers();
     setFlowState("preparing");
     void startTrainingAudioSession();
     speakEnglish("Get ready", nextSettings.voiceGender);
 
     prepareIntervalRef.current = window.setInterval(() => {
-      setPrepareRemaining((current) => Math.max(1, current - 1));
+      setPrepareRemaining((current) => {
+        if (current <= 1) return current;
+
+        const next = Math.max(1, current - 1);
+        playTimerCue(next <= 3 ? "warning" : "tick");
+        return next;
+      });
     }, 1000);
 
     prepareTimeoutRef.current = window.setTimeout(() => {

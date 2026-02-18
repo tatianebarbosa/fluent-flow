@@ -188,14 +188,6 @@ export function FlowPlayer({
         }
 
         if (totalElapsed - lastAdvancedAt >= activeSettings.intervalSeconds) {
-          if (
-            !activeSettings.learningMode &&
-            stepRef.current >= activeItems.length
-          ) {
-            finishFlow(stepRef.current);
-            return;
-          }
-
           lastAdvancedAt += activeSettings.intervalSeconds;
           setStep((currentStep) => {
             const nextStep = currentStep + 1;

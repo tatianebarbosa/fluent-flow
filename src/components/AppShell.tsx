@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Settings } from "lucide-react";
 import { useAppPreferences } from "@/components/AppPreferencesProvider";
 import type { ReactNode } from "react";
@@ -13,25 +14,33 @@ type AppShellProps = {
 
 export function AppShell({ children, compact = false }: AppShellProps) {
   const { t } = useAppPreferences();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-[radial-gradient(circle_at_top,#1f3b35_0%,#0d1110_38%,#050606_100%)] text-white">
       <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5">
-        <header className="flex items-center justify-between gap-3 py-5 text-sm">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 font-semibold tracking-wide text-white"
-          >
-            <Image
-              src="/fluent-flow-logo-v2.png"
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 object-contain"
-              priority
-            />
-            Fluent Flow
-          </Link>
+        <header
+          className={`flex items-center gap-3 py-5 text-sm ${
+            isHome ? "justify-end" : "justify-between"
+          }`}
+        >
+          {!isHome ? (
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 font-semibold tracking-wide text-white"
+            >
+              <Image
+                src="/fluent-flow-logo-v2.png"
+                alt=""
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                priority
+              />
+              Fluent Flow
+            </Link>
+          ) : null}
           <Link
             href="/settings"
             aria-label={t.settings}

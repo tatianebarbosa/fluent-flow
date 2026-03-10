@@ -109,7 +109,7 @@ export function FlowSettingsForm({
                 type="button"
                 onClick={() => selectDifficulty(difficulty)}
                 className={`w-full rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
-                  settings.difficulty === difficulty
+                  openDifficulty === difficulty
                     ? "border-emerald-300 bg-emerald-300 text-neutral-950"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
                 }`}

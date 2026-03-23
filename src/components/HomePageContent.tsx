@@ -30,7 +30,7 @@ export function HomePageContent() {
 
       <div className="grid gap-3">
         <Button href="/drill" className="w-full">
-          {t.startFlow}
+          {t.homeEnglishTraining}
         </Button>
         <Button href="/cnh" variant="secondary" className="w-full">
           {t.cnh}

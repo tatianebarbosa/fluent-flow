@@ -44,6 +44,10 @@ type FlowPlayerProps = {
   resumeSession?: boolean;
 };
 
+type FinishFlowOptions = {
+  startRest?: boolean;
+};
+
 export function FlowPlayer({
   autoStart = false,
   resumeSession = false,
@@ -116,16 +120,23 @@ export function FlowPlayer({
   }, []);
 
   const finishFlow = useCallback(
-    (finalStep: number) => {
+    (finalStep: number, { startRest = true }: FinishFlowOptions = {}) => {
       clearActiveFlowSession();
       clearFlowInterval();
       clearPrepareTimers();
+      clearRestTimers();
       stopSpeech();
       startedAtRef.current = null;
       elapsedBeforeRunRef.current = 0;
       lastFlowCountdownSecondRef.current = null;
       setCompletedSteps(finalStep);
       setElapsed(settingsRef.current.duration);
+
+      if (!startRest) {
+        void stopTrainingAudioSession();
+        setFlowState("done");
+        return;
+      }
 
       const restDuration = settingsRef.current.restDuration;
       if (restDuration <= 0) {
@@ -341,7 +352,7 @@ export function FlowPlayer({
   }
 
   function finishEarly() {
-    finishFlow(step);
+    finishFlow(Math.max(step, stepRef.current), { startRest: false });
   }
 
   function addRestTime() {

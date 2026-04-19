@@ -1,5 +1,7 @@
 # Fluent Flow
 
+**Pré-visualização do app:** [https://fluent-flow.vercel.app](https://fluent-flow.vercel.app)
+
 Eu criei o **Fluent Flow** como um app simples para estudar com repetição, foco e ritmo. A ideia principal é não depender de uma tela cheia de informações o tempo todo: o app mostra uma palavra, frase, placa ou pergunta por vez e ajuda a manter o treino fluindo.
 
 O projeto junta duas partes que eu queria praticar:

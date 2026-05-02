@@ -1,6 +1,6 @@
 # Fluent Flow
 
-**Pré-visualização do app:** ainda não publicada.
+**Pré-visualização do app:** [https://app-liard-rho-47.vercel.app](https://app-liard-rho-47.vercel.app)
 
 Eu criei o **Fluent Flow** como um app simples para estudar com repetição, foco e ritmo. A ideia principal é não depender de uma tela cheia de informações o tempo todo: o app mostra uma palavra, frase, placa ou pergunta por vez e ajuda a manter o treino fluindo.
 

@@ -14,11 +14,11 @@ export function Toggle({
   onChange,
 }: ToggleProps) {
   return (
-    <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-      <span>
+    <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+      <span className="min-w-0">
         <span className="block text-sm font-semibold text-white">{label}</span>
         {description ? (
-          <span className="mt-1 block text-xs text-white/50">{description}</span>
+          <span className="mt-1 block text-xs leading-5 text-white/50">{description}</span>
         ) : null}
       </span>
       <input

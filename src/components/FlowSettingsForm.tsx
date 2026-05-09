@@ -92,7 +92,7 @@ export function FlowSettingsForm({
       : t.repeatWordExample;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="min-w-0 space-y-6">
       <CategorySelector
         value={settings.categoryId}
         onChange={(categoryId) => updateSettings({ categoryId })}
@@ -139,7 +139,7 @@ export function FlowSettingsForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4 min-[380px]:grid-cols-2">
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
             {t.duration}
@@ -221,7 +221,7 @@ export function FlowSettingsForm({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
           {t.rest}
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2 min-[380px]:grid-cols-3">
           {restDurations.map((restDuration) => (
             <button
               key={restDuration}
@@ -282,6 +282,14 @@ export function FlowSettingsForm({
           label={t.showTranslation}
           description={t.showTranslationDescription}
           onChange={(showTranslation) => updateSettings({ showTranslation })}
+        />
+        <Toggle
+          checked={settings.prepareBeforeStart}
+          label={t.prepareBeforeStart}
+          description={t.prepareBeforeStartDescription}
+          onChange={(prepareBeforeStart) =>
+            updateSettings({ prepareBeforeStart })
+          }
         />
         <Toggle
           checked={settings.learningMode}

@@ -240,8 +240,14 @@ export function FlowPlayer({
     elapsedBeforeRunRef.current = 0;
     lastFlowCountdownSecondRef.current = null;
     clearPrepareTimers();
-    setFlowState("preparing");
     void startTrainingAudioSession();
+
+    if (!nextSettings.prepareBeforeStart) {
+      startRunning(nextSettings);
+      return;
+    }
+
+    setFlowState("preparing");
     speakEnglish("Get ready", nextSettings.voiceGender);
 
     prepareIntervalRef.current = window.setInterval(() => {
@@ -370,19 +376,19 @@ export function FlowPlayer({
 
   if (flowState === "setup") {
     return (
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
             {t.flowMode}
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-normal">
+          <h1 className="mt-3 text-3xl font-semibold tracking-normal min-[380px]:text-4xl">
             {t.flowTitle}
           </h1>
           <p className="mt-3 text-sm leading-6 text-white/60">
             {t.flowDescription}
           </p>
         </div>
-        <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4 shadow-2xl shadow-black/30 backdrop-blur">
+        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 shadow-2xl shadow-black/30 backdrop-blur min-[380px]:rounded-[2rem] min-[380px]:p-4">
           <FlowSettingsForm actionLabel={t.startFlow} onSaved={beginFlow} />
         </div>
       </div>
@@ -395,7 +401,7 @@ export function FlowPlayer({
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
           {t.completed}
         </p>
-        <h1 className="mt-4 text-6xl font-semibold tracking-normal">
+        <h1 className="mt-4 text-5xl font-semibold tracking-normal min-[380px]:text-6xl">
           {t.completed}
         </h1>
         <p className="mt-5 text-lg text-white/70">
@@ -418,7 +424,7 @@ export function FlowPlayer({
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
             {t.prepare}
           </p>
-          <h1 className="mt-5 text-7xl font-semibold tracking-normal">
+          <h1 className="mt-5 text-6xl font-semibold tracking-normal min-[380px]:text-7xl">
             {prepareRemaining}
           </h1>
         </section>
@@ -439,7 +445,7 @@ export function FlowPlayer({
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
             {t.rest}
           </p>
-          <h1 className="mt-5 text-7xl font-semibold tracking-normal">
+          <h1 className="mt-5 text-6xl font-semibold tracking-normal min-[380px]:text-7xl">
             {formatDuration(restRemaining)}
           </h1>
         </section>
@@ -513,11 +519,11 @@ export function FlowPlayer({
               <p className="mb-5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-semibold text-white/60">
                 {formatDuration(remaining)}
               </p>
-              <h1 className="max-w-full text-balance text-5xl font-semibold leading-tight tracking-normal sm:text-6xl">
+            <h1 className="max-w-full text-balance text-4xl font-semibold leading-tight tracking-normal min-[380px]:text-5xl sm:text-6xl">
                 {displayWord}
               </h1>
               {settings.showTranslation ? (
-                <p className="mt-5 text-xl font-medium text-emerald-100/70">
+                <p className="mt-5 text-lg font-medium text-emerald-100/70 min-[380px]:text-xl">
                   {item.translation}
                 </p>
               ) : null}
@@ -525,11 +531,11 @@ export function FlowPlayer({
           </div>
         ) : (
           <>
-            <h1 className="max-w-full text-balance text-6xl font-semibold leading-tight tracking-normal sm:text-7xl">
+            <h1 className="max-w-full text-balance text-5xl font-semibold leading-tight tracking-normal min-[380px]:text-6xl sm:text-7xl">
               {displayWord}
             </h1>
             {settings.showTranslation ? (
-              <p className="mt-5 text-xl font-medium text-emerald-100/70">
+              <p className="mt-5 text-lg font-medium text-emerald-100/70 min-[380px]:text-xl">
                 {item.translation}
               </p>
             ) : null}

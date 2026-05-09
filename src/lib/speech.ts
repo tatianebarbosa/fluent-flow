@@ -2,36 +2,57 @@
 
 import type { VoiceGender } from "@/types";
 
-const preferredVoiceHints = [
+const voiceQualityHints = [
   "natural",
   "neural",
-  "jenny",
-  "aria",
-  "samantha",
   "google us english",
   "microsoft",
-  "zira",
+  "online",
+  "premium",
+  "enhanced",
 ];
 
 const femaleVoiceHints = [
+  "ava",
+  "emma",
   "jenny",
+  "joanna",
   "aria",
   "samantha",
   "zira",
+  "michelle",
   "susan",
   "victoria",
   "karen",
+  "linda",
+  "sarah",
   "female",
   "woman",
 ];
 
 const maleVoiceHints = [
+  "andrew",
+  "benjamin",
+  "brandon",
+  "brian",
+  "christopher",
+  "eric",
+  "george",
   "guy",
   "david",
+  "james",
+  "jacob",
   "mark",
+  "matthew",
+  "paul",
+  "roger",
+  "ryan",
+  "tony",
   "daniel",
   "alex",
   "fred",
+  "thomas",
+  "william",
   "male",
   "man",
 ];
@@ -86,12 +107,18 @@ function getBestEnglishVoice(gender: VoiceGender): SpeechSynthesisVoice | undefi
       const name = voice.name.toLowerCase();
       const lang = voice.lang.toLowerCase();
       const genderHints = gender === "female" ? femaleVoiceHints : maleVoiceHints;
-      const hintScore = preferredVoiceHints.reduce(
+      const oppositeGenderHints =
+        gender === "female" ? maleVoiceHints : femaleVoiceHints;
+      const qualityScore = voiceQualityHints.reduce(
         (score, hint) => score + (name.includes(hint) ? 4 : 0),
         0,
       );
       const genderScore = genderHints.reduce(
-        (score, hint) => score + (name.includes(hint) ? 12 : 0),
+        (score, hint) => score + (name.includes(hint) ? 30 : 0),
+        0,
+      );
+      const oppositeGenderScore = oppositeGenderHints.reduce(
+        (score, hint) => score + (name.includes(hint) ? 24 : 0),
         0,
       );
       const usScore = lang === "en-us" ? 6 : 0;
@@ -99,7 +126,7 @@ function getBestEnglishVoice(gender: VoiceGender): SpeechSynthesisVoice | undefi
 
       return {
         voice,
-        score: genderScore + hintScore + usScore + localScore,
+        score: genderScore - oppositeGenderScore + qualityScore + usScore + localScore,
       };
     })
     .sort((a, b) => b.score - a.score)[0]?.voice;
@@ -227,8 +254,8 @@ export function speakEnglish(text: string, gender: VoiceGender = "female"): void
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
   utterance.voice = getBestEnglishVoice(gender) ?? null;
-  utterance.rate = 0.72;
-  utterance.pitch = 0.96;
+  utterance.rate = gender === "male" ? 0.7 : 0.72;
+  utterance.pitch = gender === "male" ? 0.72 : 1.04;
   utterance.volume = 1;
 
   if ("mediaSession" in navigator) {

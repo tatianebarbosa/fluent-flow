@@ -399,20 +399,20 @@ export function CnhStudyHub() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       {!isFocusedPractice ? (
         <>
           <div className="space-y-3">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
               CNH
             </p>
-            <h1 className="text-4xl font-semibold tracking-normal">{t.cnhTitle}</h1>
+            <h1 className="text-3xl font-semibold tracking-normal min-[380px]:text-4xl">{t.cnhTitle}</h1>
             <p className="text-sm leading-6 text-white/60">
               {t.cnhSubtitle}
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 min-[380px]:grid-cols-3">
             {tabs.map((item) => {
               const Icon = item.icon;
               const selected = tab === item.id || (tab === null && item.id === "flow");
@@ -422,7 +422,7 @@ export function CnhStudyHub() {
                   key={item.id}
                   type="button"
                   onClick={() => setTab(item.id)}
-                  className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-xs font-semibold transition ${
+                  className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-center text-xs font-semibold leading-tight transition ${
                     selected
                       ? "border-emerald-200 bg-emerald-300 text-neutral-950 shadow-[0_0_0_2px_rgba(167,243,208,0.45)]"
                       : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
@@ -487,15 +487,15 @@ export function CnhStudyHub() {
       ) : null}
 
       {tab === "flashcards" ? (
-        <section className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
+        <section className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
             {currentCard.tema} · {currentCard.dificuldade}
           </p>
-          <h2 className="mt-4 text-2xl font-semibold">{currentCard.enunciado}</h2>
+          <h2 className="mt-4 text-xl font-semibold leading-tight min-[380px]:text-2xl">{currentCard.enunciado}</h2>
           {showCardAnswer ? (
             <p className="mt-4 text-sm leading-6 text-white/65">{currentCard.explicacaoSimples}</p>
           ) : null}
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6 grid gap-3 min-[380px]:grid-cols-2">
             <Button
               type="button"
               variant="secondary"
@@ -544,11 +544,11 @@ export function CnhStudyHub() {
 
       {tab === "plano" ? (
         <section className="space-y-4">
-          <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/10 p-4">
+          <div className="rounded-[1.5rem] border border-emerald-300/20 bg-emerald-300/10 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/70">
               Plano simples
             </p>
-            <h2 className="mt-2 text-2xl font-semibold">15 minutos por dia.</h2>
+            <h2 className="mt-2 text-xl font-semibold min-[380px]:text-2xl">15 minutos por dia.</h2>
             <p className="mt-2 text-sm leading-6 text-white/65">
               Comece por regulamentação, avance para advertência, depois indicação e finalize com simulado completo.
             </p>
@@ -605,11 +605,11 @@ function CnhFlowPanel({
 
   if (flowState === "setup") {
     return (
-      <section className="rounded-[2rem] border border-white/10 bg-black/20 p-4 shadow-2xl shadow-black/30">
+      <section className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 shadow-2xl shadow-black/30 min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/70">
           Flow CNH
         </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-normal">
+        <h2 className="mt-3 text-2xl font-semibold tracking-normal min-[380px]:text-3xl">
           Escolha um Flow para treinar.
         </h2>
         <p className="mt-3 text-sm leading-6 text-white/60">
@@ -625,7 +625,7 @@ function CnhFlowPanel({
                 key={option.id}
                 type="button"
                 onClick={() => onSelectFlow(option.id)}
-                className={`rounded-2xl border px-4 py-3 text-left transition ${
+                className={`min-w-0 rounded-2xl border px-3 py-3 text-left transition min-[380px]:px-4 ${
                   selected
                     ? "border-emerald-200 bg-emerald-300 text-neutral-950 shadow-[0_0_0_2px_rgba(167,243,208,0.45)]"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
@@ -642,17 +642,17 @@ function CnhFlowPanel({
             );
           })}
         </div>
-        <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-center">
+        <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-2 text-center min-[380px]:p-3">
           <div>
-            <p className="text-2xl font-semibold">{flowItems.length}</p>
+            <p className="text-xl font-semibold min-[380px]:text-2xl">{flowItems.length}</p>
             <p className="mt-1 text-xs text-white/45">itens</p>
           </div>
           <div>
-            <p className="text-2xl font-semibold">5s</p>
+            <p className="text-xl font-semibold min-[380px]:text-2xl">5s</p>
             <p className="mt-1 text-xs text-white/45">por item</p>
           </div>
           <div>
-            <p className="text-2xl font-semibold">10s</p>
+            <p className="text-xl font-semibold min-[380px]:text-2xl">10s</p>
             <p className="mt-1 text-xs text-white/45">preparo</p>
           </div>
         </div>
@@ -666,11 +666,11 @@ function CnhFlowPanel({
 
   if (flowState === "preparing") {
     return (
-      <section className="flex min-h-[30rem] flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-black/20 p-4 text-center">
+      <section className="flex min-h-[28rem] flex-col items-center justify-center rounded-[1.5rem] border border-white/10 bg-black/20 p-3 text-center min-[380px]:min-h-[30rem] min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
           {t.prepare}
         </p>
-        <h2 className="mt-5 text-7xl font-semibold tracking-normal">
+        <h2 className="mt-5 text-6xl font-semibold tracking-normal min-[380px]:text-7xl">
           {prepareRemaining}
         </h2>
       </section>
@@ -679,11 +679,11 @@ function CnhFlowPanel({
 
   if (flowState === "done") {
     return (
-      <section className="flex min-h-[30rem] flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-black/20 p-4 text-center">
+      <section className="flex min-h-[28rem] flex-col items-center justify-center rounded-[1.5rem] border border-white/10 bg-black/20 p-3 text-center min-[380px]:min-h-[30rem] min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
           {t.completed}
         </p>
-        <h2 className="mt-4 text-5xl font-semibold tracking-normal">
+        <h2 className="mt-4 text-4xl font-semibold tracking-normal min-[380px]:text-5xl">
           Flow finalizado
         </h2>
         <p className="mt-4 text-sm text-white/60">
@@ -702,7 +702,7 @@ function CnhFlowPanel({
   }
 
   return (
-    <section className="flex min-h-[34rem] flex-col rounded-[2rem] border border-white/10 bg-black/20 p-4">
+    <section className="flex min-h-[31rem] flex-col rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:min-h-[34rem] min-[380px]:rounded-[2rem] min-[380px]:p-4">
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-3 text-sm font-semibold text-white/80">
           <span>{flowIndex + 1} de {flowItems.length}</span>
@@ -723,7 +723,7 @@ function CnhFlowPanel({
         {item.plate ? (
           <CnhPlateSign plate={item.plate} />
         ) : null}
-        <h2 className={`${item.plate ? "mt-8" : "mt-0"} max-w-full text-balance text-4xl font-semibold leading-tight tracking-normal`}>
+        <h2 className={`${item.plate ? "mt-8" : "mt-0"} max-w-full text-balance text-3xl font-semibold leading-tight tracking-normal min-[380px]:text-4xl`}>
           {item.title}
         </h2>
         <p className="mt-5 max-w-sm text-base leading-7 text-emerald-100/70">
@@ -731,7 +731,7 @@ function CnhFlowPanel({
         </p>
       </div>
 
-      <div className="grid shrink-0 grid-cols-[1fr_auto_auto] gap-3 border-t border-white/10 pt-4 pb-2">
+      <div className="grid shrink-0 grid-cols-[1fr_auto_auto] gap-2 border-t border-white/10 pt-4 pb-2 min-[380px]:gap-3">
         {flowState === "running" ? (
           <Button type="button" variant="secondary" className="gap-2" onClick={onPause}>
             <Pause aria-hidden="true" size={18} strokeWidth={2.4} />
@@ -796,7 +796,7 @@ function PlateStudyPanel({
 
   return (
     <section className="space-y-5">
-      <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
+      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <div className="relative">
           <Search
             aria-hidden="true"
@@ -810,7 +810,7 @@ function PlateStudyPanel({
             className="min-h-12 w-full rounded-full border border-white/10 bg-white/[0.04] py-3 pl-11 pr-4 text-sm font-medium text-white outline-none transition placeholder:text-white/35 focus:border-emerald-200 focus:bg-white/[0.07]"
           />
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="mt-3 grid gap-2 min-[380px]:grid-cols-2">
           {plateCategories.map((category) => {
             const selected = category === plateFilter;
 
@@ -883,13 +883,13 @@ function PlateCard({
   onToggleFavorite: (plateId: string) => void;
 }) {
   return (
-    <article className="grid grid-cols-[4.5rem_1fr_auto] gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+    <article className="grid grid-cols-[4rem_1fr_auto] gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3 min-[380px]:grid-cols-[4.5rem_1fr_auto] min-[380px]:gap-3">
       <div className="flex items-center justify-center rounded-2xl border border-emerald-300/20 bg-white/[0.03]">
         <CnhPlateSign plate={plate} compact />
       </div>
-      <div>
+      <div className="min-w-0">
         <p className="text-sm font-semibold text-white">{plate.nome}</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.14em] text-white/40">
+        <p className="mt-1 text-xs uppercase tracking-[0.1em] text-white/40 min-[380px]:tracking-[0.14em]">
           {plate.categoria}
         </p>
         <p className="mt-2 text-sm leading-5 text-white/65">{plate.significado}</p>
@@ -945,7 +945,7 @@ function ReviewPanel({
           {reviewItems.map((item) => (
             <article
               key={item.id}
-              className="grid grid-cols-[4.5rem_1fr] gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3"
+              className="grid grid-cols-[4rem_1fr] gap-2 rounded-2xl border border-white/10 bg-white/[0.04] p-3 min-[380px]:grid-cols-[4.5rem_1fr] min-[380px]:gap-3"
             >
               <div className="flex items-center justify-center rounded-2xl border border-emerald-300/20 bg-white/[0.03]">
                 {item.plate ? (
@@ -954,8 +954,8 @@ function ReviewPanel({
                   <BookmarkPlus size={22} className="text-emerald-100/70" />
                 )}
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/60">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/60 min-[380px]:tracking-[0.16em]">
                   Marcado para revisar
                 </p>
                 <h3 className="mt-1 text-sm font-semibold">{item.title}</h3>
@@ -984,7 +984,7 @@ function ProgressPanel({
 }) {
   return (
     <section className="space-y-5">
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid gap-2 min-[380px]:grid-cols-3">
         <MetricCard label="Placas estudadas" value={String(totalPlatesStudied)} />
         <MetricCard label="Acertos" value={`${accuracy}%`} />
         <MetricCard label="Revisar" value={String(reviewCount)} />
@@ -1093,11 +1093,11 @@ function SimulationPanel({
 
   if (mode === "prova" && proofFinished) {
     return (
-      <section className="rounded-[2rem] border border-white/10 bg-black/20 p-5 text-center">
+      <section className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4 text-center min-[380px]:rounded-[2rem] min-[380px]:p-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/70">
           Resultado
         </p>
-        <h2 className="mt-3 text-5xl font-semibold">{correctTotal}/{total}</h2>
+        <h2 className="mt-3 text-4xl font-semibold min-[380px]:text-5xl">{correctTotal}/{total}</h2>
         <p className="mt-3 text-sm leading-6 text-white/65">
           Resultado do modo prova. Agora revise as erradas no modo aprender.
         </p>
@@ -1111,15 +1111,15 @@ function SimulationPanel({
 
   return (
     <section className="space-y-4">
-      <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
+      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-100/70">
           {t.cnhSimulation}
         </p>
-        <h2 className="mt-2 text-2xl font-semibold">{title}</h2>
+        <h2 className="mt-2 text-xl font-semibold leading-tight min-[380px]:text-2xl">{title}</h2>
         <p className="mt-2 text-sm text-white/60">
           {currentIndex + 1} de {total} · questões misturadas por tema.
         </p>
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid gap-2 min-[380px]:grid-cols-2">
           <button
             type="button"
             onClick={() => onSetMode("aprender")}
@@ -1143,7 +1143,7 @@ function SimulationPanel({
             {t.examMode}
           </button>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid gap-2 min-[380px]:grid-cols-2">
           <Button type="button" variant="secondary" onClick={onStartFull}>
             {t.questions30}
           </Button>
@@ -1159,11 +1159,11 @@ function SimulationPanel({
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
+      <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
           {t.reviewByTheme}
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-2">
+        <div className="mt-3 grid gap-2 min-[380px]:grid-cols-2">
           {themes.map((theme) => {
             const item = progressByTheme.find((progress) => progress.label === theme);
 
@@ -1225,9 +1225,9 @@ function QuestionPanel({
   const showLearning = hasAnswered && mode === "aprender";
 
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-black/20 p-4">
+    <section className="rounded-[1.5rem] border border-white/10 bg-black/20 p-3 min-[380px]:rounded-[2rem] min-[380px]:p-4">
       <div className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
             {question.tema} · {question.subtema}
           </p>
@@ -1243,14 +1243,14 @@ function QuestionPanel({
         </div>
       </div>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/45 min-[380px]:tracking-[0.18em]">
           {mode === "prova" ? "Modo Prova" : "Modo Aprender"}
         </p>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/45 min-[380px]:tracking-[0.18em]">
           {question.dificuldade}
         </p>
       </div>
-      <h2 className="mt-4 text-2xl font-semibold leading-tight">{question.enunciado}</h2>
+      <h2 className="mt-4 text-xl font-semibold leading-tight min-[380px]:text-2xl">{question.enunciado}</h2>
       <div className="mt-5 grid gap-2">
         {question.alternativas.map((answer) => {
           const selected = selectedAnswer === answer.id;

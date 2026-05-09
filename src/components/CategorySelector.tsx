@@ -56,7 +56,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
                 key={category.id}
                 type="button"
                 onClick={() => onChange(category.id)}
-                className={`flex min-h-14 items-center rounded-2xl border px-4 py-2.5 text-left text-sm font-medium transition ${
+                className={`flex min-h-14 min-w-0 items-center justify-center rounded-2xl border px-3 py-2.5 text-center text-sm font-medium leading-tight transition min-[380px]:px-4 ${
                   selected
                     ? "border-emerald-300 bg-emerald-300 text-neutral-950"
                     : "border-white/10 bg-white/[0.04] text-white hover:bg-white/10"
@@ -75,7 +75,7 @@ export function CategorySelector({ value, onChange }: CategorySelectorProps) {
               type="button"
               onClick={handleToggleMore}
               aria-label={t.moreCategoriesAria}
-              className="flex min-h-14 items-center rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-left text-sm font-medium text-white transition hover:bg-white/10"
+              className="flex min-h-14 min-w-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-center text-sm font-medium leading-tight text-white transition hover:bg-white/10 min-[380px]:px-4"
             >
               {t.moreCategories}
             </button>

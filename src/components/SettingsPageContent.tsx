@@ -64,18 +64,18 @@ export function SettingsPageContent({
   }
 
   return (
-    <div className="space-y-6 pb-6">
+    <div className="min-w-0 space-y-6 pb-6">
       <div>
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-200/70">
           {t.settings}
         </p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-normal">
+        <h1 className="mt-3 text-3xl font-semibold tracking-normal min-[380px]:text-4xl">
           {t.preferences}
         </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <section className="space-y-4 rounded-[2rem] border border-white/10 bg-black/20 p-4 shadow-2xl shadow-black/30 backdrop-blur">
+        <section className="space-y-4 rounded-[1.5rem] border border-white/10 bg-black/20 p-3 shadow-2xl shadow-black/30 backdrop-blur min-[380px]:rounded-[2rem] min-[380px]:p-4">
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
               {t.appLanguage}

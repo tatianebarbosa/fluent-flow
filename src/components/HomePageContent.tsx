@@ -8,7 +8,7 @@ export function HomePageContent() {
   const { t } = useAppPreferences();
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-7 min-[380px]:space-y-8">
       <div className="space-y-5">
         <div className="space-y-5">
           <Image
@@ -16,13 +16,13 @@ export function HomePageContent() {
             alt="Fluent Flow"
             width={128}
             height={128}
-            className="h-28 w-28 object-contain"
+            className="h-24 w-24 object-contain min-[380px]:h-28 min-[380px]:w-28"
             priority
           />
-          <h1 className="text-6xl font-semibold leading-none tracking-normal">
+          <h1 className="text-5xl font-semibold leading-none tracking-normal min-[380px]:text-6xl">
             Fluent Flow
           </h1>
-          <p className="mt-5 text-xl font-medium text-white/80">
+          <p className="mt-5 text-lg font-medium leading-7 text-white/80 min-[380px]:text-xl">
             {t.homeTagline}
           </p>
         </div>
@@ -37,7 +37,7 @@ export function HomePageContent() {
         </Button>
       </div>
 
-      <div className="flex items-center justify-center gap-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+      <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/45 min-[380px]:justify-center min-[380px]:tracking-[0.18em]">
         {[t.hear, t.repeat, t.flowVerb].map((item, index) => (
           <div key={item} className="flex items-center gap-3">
             {index > 0 ? (

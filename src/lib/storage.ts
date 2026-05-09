@@ -127,6 +127,10 @@ function normalizeFlowSettings(
       typeof parsed.showTranslation === "boolean"
         ? parsed.showTranslation
         : defaultFlowSettings.showTranslation,
+    prepareBeforeStart:
+      typeof parsed.prepareBeforeStart === "boolean"
+        ? parsed.prepareBeforeStart
+        : defaultFlowSettings.prepareBeforeStart,
     showTime:
       hasCurrentSettingsVersion && typeof parsed.showTime === "boolean"
         ? parsed.showTime

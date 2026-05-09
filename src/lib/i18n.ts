@@ -55,6 +55,9 @@ export const messages = {
     pause: "Pausar",
     preferences: "Preferências",
     prepare: "Se prepare",
+    prepareBeforeStart: "Contagem de preparo",
+    prepareBeforeStartDescription:
+      "Mostra 10 segundos antes de começar. Desligue para iniciar direto.",
     questions10: "10 questões",
     questions30: "30 questões",
     repeat: "Repetir",
@@ -139,6 +142,9 @@ export const messages = {
     pause: "Pause",
     preferences: "Preferences",
     prepare: "Get ready",
+    prepareBeforeStart: "Preparation countdown",
+    prepareBeforeStartDescription:
+      "Shows 10 seconds before starting. Turn it off to begin immediately.",
     questions10: "10 questions",
     questions30: "30 questions",
     repeat: "Repeat",

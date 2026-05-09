@@ -52,5 +52,6 @@ export type FlowSettings = {
   learningBlockSize: LearningBlockSize;
   voiceGender: VoiceGender;
   showTranslation: boolean;
+  prepareBeforeStart: boolean;
   showTime: boolean;
 };

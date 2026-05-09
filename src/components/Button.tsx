@@ -23,7 +23,7 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const classes = `inline-flex min-h-11 items-center justify-center rounded-full border px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`;
+  const classes = `inline-flex min-h-11 max-w-full min-w-0 items-center justify-center rounded-full border px-5 py-2.5 text-center text-sm font-semibold leading-tight transition disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`;
 
   if (href) {
     return (

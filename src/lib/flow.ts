@@ -19,6 +19,7 @@ export const defaultFlowSettings: FlowSettings = {
   learningBlockSize: 5,
   voiceGender: "female",
   showTranslation: true,
+  prepareBeforeStart: true,
   showTime: false,
 };
 

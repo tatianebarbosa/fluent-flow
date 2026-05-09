@@ -19,26 +19,26 @@ export function AppShell({ children, compact = false }: AppShellProps) {
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-[radial-gradient(circle_at_top,#1f3b35_0%,#0d1110_38%,#050606_100%)] text-white">
-      <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-5">
+      <div className="mx-auto flex min-h-dvh w-full max-w-md min-w-0 flex-col px-4 min-[380px]:px-5">
         <header
-          className={`flex items-center gap-3 py-5 text-sm ${
+          className={`flex items-center gap-3 py-4 text-sm min-[380px]:py-5 ${
             isHome ? "justify-end" : "justify-between"
           }`}
         >
           {!isHome ? (
             <Link
               href="/"
-              className="inline-flex items-center gap-2 font-semibold tracking-wide text-white"
+              className="inline-flex min-w-0 items-center gap-2 font-semibold tracking-wide text-white"
             >
               <Image
                 src="/fluent-flow-logo-v2.png"
                 alt=""
                 width={32}
                 height={32}
-                className="h-8 w-8 object-contain"
+                className="h-8 w-8 shrink-0 object-contain"
                 priority
               />
-              Fluent Flow
+              <span className="truncate">Fluent Flow</span>
             </Link>
           ) : null}
           <Link
@@ -53,8 +53,8 @@ export function AppShell({ children, compact = false }: AppShellProps) {
         <section
           className={
             compact
-              ? "flex flex-1 flex-col pb-6"
-              : "flex flex-1 flex-col justify-center pb-10"
+              ? "flex min-w-0 flex-1 flex-col pb-6"
+              : "flex min-w-0 flex-1 flex-col justify-center pb-10"
           }
         >
           {children}
